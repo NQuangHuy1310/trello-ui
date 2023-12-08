@@ -22,6 +22,7 @@ const Templates = () => {
   return (
     <Box>
       <Button
+        sx={{ color: 'white' }}
         id="basic-button-Templates"
         aria-controls={open ? 'basic-menu-templates' : undefined}
         aria-haspopup="true"
