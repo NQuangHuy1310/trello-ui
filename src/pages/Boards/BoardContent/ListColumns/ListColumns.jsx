@@ -18,6 +18,9 @@ const ListColumns = () => {
       {/* Box Column */}
       <Column />
       <Column />
+      <Column />
+      <Column />
+      <Column />
 
       <Box sx={{
         minWidth:'200px',
