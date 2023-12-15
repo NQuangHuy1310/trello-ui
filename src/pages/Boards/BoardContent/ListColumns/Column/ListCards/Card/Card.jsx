@@ -8,17 +8,39 @@ import InsertLinkIcon from '@mui/icons-material/InsertLink'
 import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
 
+import { useSortable } from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
+
 const Card = ({ card }) => {
+  // sử lý kéo thả
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: card._id,
+    data: { ...card }
+  })
+
+  const dndKitCardsStyles = {
+    // touchAction: 'none', // Danh cho sensor default dạng Pointer
+    // Nếu sử dụng CSS.Transform như docs sẽ bị kiểu lỗi Stretch
+    transform: CSS.Translate.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : undefined
+  }
+
   const shouldShowCardActions = () => {
     return !!card?.memberIds?.length || !!card?.comments?.length || !!card?.attachments?.length
   }
 
   return (
-    <MuiCard sx={{
-      cursor: 'pointer',
-      boxShadow: '0 1px 1px rgba(0, 0, 0, 0.2)',
-      overflow: 'unset'
-    }}>
+    <MuiCard
+      ref={setNodeRef}
+      style={dndKitCardsStyles}
+      {...attributes}
+      {...listeners}
+      sx={{
+        cursor: 'pointer',
+        boxShadow: '0 1px 1px rgba(0, 0, 0, 0.2)',
+        overflow: 'unset'
+      }}>
       {card?.cover && <CardMedia sx={{ height: 140 }} image={card?.cover} />}
 
       <CardContent sx={{ p: 1.5, '&:last-child': { p: 1.5 } }}>

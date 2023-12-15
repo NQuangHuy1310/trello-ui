@@ -1,5 +1,7 @@
 import ListColumns from './ListColumns/ListColumns'
 import { mapOrder } from '~/utils/sorts'
+import Column from './ListColumns/Column/Column'
+import Card from './ListColumns/Column/ListCards/Card/Card'
 
 import Box from '@mui/material/Box'
 import { DndContext,
@@ -7,11 +9,17 @@ import { DndContext,
   useSensor,
   useSensors,
   MouseSensor,
-  TouchSensor
+  TouchSensor,
+  DragOverlay,
+  defaultDropAnimationSideEffects
 } from '@dnd-kit/core'
 import { arrayMove } from '@dnd-kit/sortable'
 import { useEffect, useState } from 'react'
 
+const ACTIVE_DRAG_ITEM_TYPE = {
+  COLUMN: 'ACTIVE_DRAG_ITEM_TYPE_COLUMN',
+  CARD: 'ACTIVE_DRAG_ITEM_TYPE_CARD'
+}
 
 const BoardContent = ({ board }) => {
   // Nếu dùng PonterSensor mặc định thì phải kết hợp thuộc tính css trouch-action: none ở những phần tử kéo thả - nhưng mà còn bug
@@ -28,10 +36,27 @@ const BoardContent = ({ board }) => {
 
   const [orderedColumns, setOrderedColumns] = useState([])
 
+  // Cùng 1 thời điểm chỉ có 1 phần tử đang được kéo (column hoặc card)
+  const [acitveDragItemId, setActiveDragItemId] = useState(null)
+  const [acitveDragItemType, setActiveDragItemType] = useState(null)
+  const [acitveDragItemData, setActiveDragItemData] = useState(null)
+
   useEffect(() => {
     setOrderedColumns(mapOrder(board?.columns, board?.columnOrderIds, '_id'))
   }, [board])
 
+  // khi bắt đầu kéo 1 phần tử
+  const handleDragStart = (event) => {
+    setActiveDragItemId(event?.active?.id)
+    setActiveDragItemType(
+      event?.active?.data?.current?.columnId ?
+        ACTIVE_DRAG_ITEM_TYPE.CARD :
+        ACTIVE_DRAG_ITEM_TYPE.COLUMN
+    )
+    setActiveDragItemData(event?.active?.data?.current)
+  }
+
+  // khi kết thúc kéo 1 phần tử
   const handleDragEnd = (event) => {
     const { active, over } = event
 
@@ -57,10 +82,22 @@ const BoardContent = ({ board }) => {
       setOrderedColumns(dndOrderedColumns)
     }
 
+    setActiveDragItemId(null)
+    setActiveDragItemType(null)
+    setActiveDragItemData(null)
+  }
+
+  // Animation khi thả drop phần tử - test bằng cách kéo xong thả trực tiếp và nhin vào phần giữ chỗ overlay
+  const customDropAnimation = {
+    sideEffects: defaultDropAnimationSideEffects({ styles: { active: { opacity: '0.5' } } })
   }
 
   return (
-    <DndContext onDragEnd={handleDragEnd} sensors={mySensors}>
+    <DndContext
+      sensors={mySensors}
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
+    >
       <Box sx={{
         bgcolor: (theme) => (theme.palette.mode === 'dark' ? '#34495e' : '#1976d2'),
         height:(theme) => theme.trello.boardContentHeight,
@@ -68,6 +105,11 @@ const BoardContent = ({ board }) => {
         p: '10px 0'
       }}>
         <ListColumns columns={orderedColumns} />
+        <DragOverlay dropAnimation={customDropAnimation}>
+          {!acitveDragItemType && null }
+          {(acitveDragItemType === ACTIVE_DRAG_ITEM_TYPE.COLUMN) && <Column column={acitveDragItemData} />}
+          {(acitveDragItemType === ACTIVE_DRAG_ITEM_TYPE.CARD) && <Card card={acitveDragItemData} />}
+        </DragOverlay>
       </Box>
     </DndContext>
   )
