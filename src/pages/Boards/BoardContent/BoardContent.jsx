@@ -9,13 +9,11 @@ import { DndContext,
   defaultDropAnimationSideEffects,
   closestCorners,
   pointerWithin,
-  rectIntersection,
-  getFirstCollision,
-  closestCenter
+  getFirstCollision
 } from '@dnd-kit/core'
 import { arrayMove } from '@dnd-kit/sortable'
 import { useEffect, useState, useCallback, useRef } from 'react'
-import { cloneDeep, over } from 'lodash'
+import { cloneDeep } from 'lodash'
 
 import ListColumns from './ListColumns/ListColumns'
 import { mapOrder } from '~/utils/sorts'
@@ -259,23 +257,28 @@ const BoardContent = ({ board }) => {
       return closestCorners({ ...args })
     }
 
-    // Tìm các điểm giao nhau, va chạm - intersetion với con trỏ
+    // Tìm các điểm giao nhau, va chạm - intersetion với con trỏ, trả về một mảng các va chạm - intersections với con trỏ
     const pointerIntersections = pointerWithin(args)
 
-    // Thuật toán phát hiện va chạm sẽ trả về một mảng va chạm ở đây
-    const intersections = !!pointerIntersections?.length
-      ? pointerIntersections
-      : rectIntersection(args)
+    // Nếu pointerIntersions là mảng rỗng, return luôn không làm gì hết
+    // Fix triệt để cái bug flickering của thư viện Dnd-kit trong trường hợp sau:
+    // - Kéo thả 1 cái card có image cover lơn và kéo lên phía trên cùng ra khỏi khu vực cần kéo thả
+    if (!pointerIntersections?.length) return
 
-    // Tìm overId đầu tiên trong đám intersections ở trên
-    let overId = getFirstCollision(intersections, 'id')
+    // Thuật toán phát hiện va chạm sẽ trả về một mảng va chạm ở đây (không cần bước này nữa)
+    // const intersections = !!pointerIntersections?.length
+    //   ? pointerIntersections
+    //   : rectIntersection(args)
+
+    // Tìm overId đầu tiên trong đám pointerIntersections ở trên
+    let overId = getFirstCollision(pointerIntersections, 'id')
 
     if (overId) {
       // Nếu over nó là column thì sẽ tìm tới cái cardId gần nhất bên trong khu vực va chạm đó dựa vào thuật toán
-      // phát hiện va chạm closestCenter hoặc closestCorners đều được. Tuy nhiên ở đây dùng closestCenter mượt hơn
+      // phát hiện va chạm closestCenter hoặc closestCorners đều được. Tuy nhiên ở đây dùng closestCorners mượt hơn
       const checkColumn = orderedColumns.find(column => column._id === overId)
       if (checkColumn) {
-        overId = closestCenter({
+        overId = closestCorners({
           ...args,
           droppableContainers: args.droppableContainers.filter(container => {
             return (container.id !== overId) && (checkColumn?.cardOrderIds?.includes(container.id))
