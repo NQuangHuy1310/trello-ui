@@ -28,7 +28,6 @@ const MENU_STYLES = {
 }
 
 const Boardbar = ({ board }) => {
-  const { title, type } = board
 
   return (
     <Box px={2} sx={{
@@ -48,14 +47,14 @@ const Boardbar = ({ board }) => {
         <Chip
           sx={MENU_STYLES}
           icon={<DashboardIcon />}
-          label={title}
+          label={board?.title}
           onClick={() => {}}
         />
 
         <Chip
           sx={MENU_STYLES}
           icon={<VpnLockIcon />}
-          label={capitalizeFirstLetter(type)}
+          label={capitalizeFirstLetter(board?.type)}
           onClick={() => {}}
         />
 
