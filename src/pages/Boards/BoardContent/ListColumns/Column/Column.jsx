@@ -24,6 +24,7 @@ import CloseIcon from '@mui/icons-material/Close'
 
 import ListCards from './ListCards/ListCards'
 import { mapOrder } from '~/utils/sorts'
+import { toast } from 'react-toastify'
 
 const Column = ({ column }) => {
   // sử lý kéo thả
@@ -60,7 +61,8 @@ const Column = ({ column }) => {
 
   const addNewCard = () => {
     if (!newCardTitle) {
-      // console.error('Please enter Card Title!')
+      toast.warning('Please Enter Card Title!')
+      return
     }
     // Call API
 

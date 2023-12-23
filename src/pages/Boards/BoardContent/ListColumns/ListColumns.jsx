@@ -7,6 +7,7 @@ import Box from '@mui/material/Box'
 import TextField from '@mui/material/TextField'
 import CloseIcon from '@mui/icons-material/Close'
 import { SortableContext, horizontalListSortingStrategy } from '@dnd-kit/sortable'
+import { toast } from 'react-toastify'
 
 
 const ListColumns = ({ columns }) => {
@@ -17,7 +18,8 @@ const ListColumns = ({ columns }) => {
 
   const addNewColumn = () => {
     if (!newColumnTitle) {
-      // console.error('Please enter Column Title!')
+      toast.warning('Please Enter Column Title!')
+      return
     }
     // Call API
 
