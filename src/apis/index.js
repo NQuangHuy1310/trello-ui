@@ -10,8 +10,21 @@ một thức cực kì mạnh mẽ trong axios đó là Interceptors
 * Hiểu đơn giản Interceptiors là cách mà chúng ta sẽ đánh chận vào giữa requét hoặc response để xử lý logic mà chúng ta muốn
 */
 
+// Boards
 export const fetchBoardDetailsAPI = async (boardId) => {
-  const response = await axios.get(`${API_ROOT}/v1/boards/${boardId}`)
-  // Lưu ý: axios sẽ trả về kết quả về qua property của nó là data
-  return response.data
+	const response = await axios.get(`${API_ROOT}/v1/boards/${boardId}`)
+	// Lưu ý: axios sẽ trả về kết quả về qua property của nó là data
+	return response.data
+}
+
+// Columns
+export const createNewColumnApi = async (newColumnData) => {
+	const response = await axios.post(`${API_ROOT}/v1/columns`, newColumnData)
+	return response.data
+}
+
+// Cards
+export const createNewCardApi = async (newCardData) => {
+	const response = await axios.post(`${API_ROOT}/v1/cards`, newCardData)
+	return response.data
 }
