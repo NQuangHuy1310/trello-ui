@@ -28,7 +28,7 @@ const ACTIVE_DRAG_ITEM_TYPE = {
 	CARD: 'ACTIVE_DRAG_ITEM_TYPE_CARD'
 }
 
-const BoardContent = ({ board, createNewColumn, createNewCard }) => {
+const BoardContent = ({ board, createNewColumn, createNewCard, moveColumns }) => {
 	// Nếu dùng PonterSensor mặc định thì phải kết hợp thuộc tính css trouch-action: none ở những phần tử kéo thả - nhưng mà còn bug
 	// const pointerSensor = useSensor(PointerSensor, { activationConstraint: { distance: 10 } })
 	// Yêu cầu chuột di chuyển 10px thì mới kích hoạt event, fix trường hợp click bị gọi event
@@ -273,12 +273,13 @@ const BoardContent = ({ board, createNewColumn, createNewCard }) => {
 				// Dùng arrayMove của thằng dnd-kit để sắp xếp lại Columns ban đầu
 				// Code của arrayMove ở đây: dnd-kit/packages/sortble/src/utilities/arrayMove.ts
 				const dndOrderedColumns = arrayMove(orderedColumns, oldColumnIndex, newColumnIndex)
-				// 2 cái console.log dữ liệu sau dùng để sử lý API
-				// const dndOrderedColumnsIds = dndOrderedColumns.map(c => c._id)
-				// console.log('dndOrderedColumns', dndOrderedColumns)
-				// console.log('dndOrderedColumnsIds', dndOrderedColumnsIds)
 
-				// Cập nhật lại state sau khi đã kéo thả
+				/*
+				 * Gọi lên props func moveColumns nằm ở components cha cao nhất
+				 */
+				moveColumns(dndOrderedColumns)
+
+				// Vẫn gọi update State ở đây để tránh delay hoặc Flickering giao diện lúc kéo thả cần phải chờ gọi API (small trick)
 				setOrderedColumns(dndOrderedColumns)
 			}
 		}
