@@ -15,7 +15,7 @@ const ListColumns = ({ columns, createNewColumn, createNewCard }) => {
 
 	const [newColumnTitle, setNewColumnTitle] = useState('')
 
-	const addNewColumn = async () => {
+	const addNewColumn = () => {
 		if (!newColumnTitle) {
 			toast.error('Please Enter Column Title!')
 			return
@@ -29,7 +29,7 @@ const ListColumns = ({ columns, createNewColumn, createNewCard }) => {
 		 * Gọi lên props function createNewColumn nằm ở component cha cao nhất (board/_id.jsx)
 		 * Với việc sử dụng Redux thì code sẽ clean và chỉ chỉnh hơn
 		 */
-		await createNewColumn(newColumnData)
+		createNewColumn(newColumnData)
 
 		toggleOpenNewColumnForm()
 		setNewColumnTitle('')
@@ -39,7 +39,10 @@ const ListColumns = ({ columns, createNewColumn, createNewCard }) => {
     Nếu không đúng thì vẫn kéo thả được nhưng không có animation
   */
 	return (
-		<SortableContext items={columns?.map((c) => c._id)} strategy={horizontalListSortingStrategy}>
+		<SortableContext
+			items={columns?.map((c) => c._id)}
+			strategy={horizontalListSortingStrategy}
+		>
 			<Box
 				sx={{
 					bgcolor: 'inherit',

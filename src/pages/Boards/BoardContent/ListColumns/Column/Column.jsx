@@ -22,7 +22,6 @@ import TextField from '@mui/material/TextField'
 import CloseIcon from '@mui/icons-material/Close'
 
 import ListCards from './ListCards/ListCards'
-import { mapOrder } from '~/utils/sorts'
 import { toast } from 'react-toastify'
 
 const Column = ({ column, createNewCard }) => {
@@ -51,14 +50,15 @@ const Column = ({ column, createNewCard }) => {
 	const handleClick = (event) => setAnchorEl(event.currentTarget)
 	const handleClose = () => setAnchorEl(null)
 
-	const orderedCards = mapOrder(column?.cards, column?.cardOrderIds, '_id')
+	// card đã được sắp xếp ở component cha cao nhât
+	const orderedCards = column.cards
 
 	const [openNewCardForm, setOpenNewCardForm] = useState(false)
 	const toggleOpenNewCardForm = () => setOpenNewCardForm(!openNewCardForm)
 
 	const [newCardTitle, setNewCardTitle] = useState('')
 
-	const addNewCard = async () => {
+	const addNewCard = () => {
 		if (!newCardTitle) {
 			toast.warning('Please Enter Card Title!')
 			return
@@ -69,7 +69,7 @@ const Column = ({ column, createNewCard }) => {
 			columnId: column._id
 		}
 
-		await createNewCard(newCardData)
+		createNewCard(newCardData)
 
 		toggleOpenNewCardForm()
 		setNewCardTitle('')
@@ -86,7 +86,8 @@ const Column = ({ column, createNewCard }) => {
 					ml: 2,
 					borderRadius: '6px',
 					height: 'fit-content',
-					maxHeight: (theme) => `calc(${theme.trello.boardContentHeight} - ${theme.spacing(5)})`
+					maxHeight: (theme) =>
+						`calc(${theme.trello.boardContentHeight} - ${theme.spacing(5)})`
 				}}
 			>
 				{/* Box column header */}
@@ -222,9 +223,13 @@ const Column = ({ column, createNewCard }) => {
 										bgcolor: (theme) =>
 											theme.palette.mode === 'dark' ? '#333643' : 'white'
 									},
-									'& label.Mui-focused': { color: (theme) => theme.palette.primary.main },
+									'& label.Mui-focused': {
+										color: (theme) => theme.palette.primary.main
+									},
 									'& .MuiOutlinedInput-root': {
-										'& fieldset': { borderColor: (theme) => theme.palette.primary.main },
+										'& fieldset': {
+											borderColor: (theme) => theme.palette.primary.main
+										},
 										'&:hover fieldset': {
 											borderColor: (theme) => theme.palette.primary.main
 										},
@@ -250,7 +255,9 @@ const Column = ({ column, createNewCard }) => {
 										boxShadow: 'none',
 										border: '0.5px solid',
 										borderColor: (theme) => theme.palette.success.main,
-										'&:hover': { bgcolor: (theme) => theme.palette.success.main }
+										'&:hover': {
+											bgcolor: (theme) => theme.palette.success.main
+										}
 									}}
 								>
 									Add
