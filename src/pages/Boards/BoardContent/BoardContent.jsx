@@ -33,7 +33,8 @@ const BoardContent = ({
 	createNewCard,
 	moveColumns,
 	moveCardInTheSameColumn,
-	moveCardToDifferentColumn
+	moveCardToDifferentColumn,
+	deleteColumnDetails
 }) => {
 	// Nếu dùng PonterSensor mặc định thì phải kết hợp thuộc tính css trouch-action: none ở những phần tử kéo thả - nhưng mà còn bug
 	// const pointerSensor = useSensor(PointerSensor, { activationConstraint: { distance: 10 } })
@@ -405,6 +406,7 @@ const BoardContent = ({
 					columns={orderedColumns}
 					createNewColumn={createNewColumn}
 					createNewCard={createNewCard}
+					deleteColumnDetails={deleteColumnDetails}
 				/>
 				<DragOverlay dropAnimation={customDropAnimation}>
 					{!acitveDragItemType && null}
