@@ -9,7 +9,7 @@ import CloseIcon from '@mui/icons-material/Close'
 import { SortableContext, horizontalListSortingStrategy } from '@dnd-kit/sortable'
 import { toast } from 'react-toastify'
 
-const ListColumns = ({ columns, createNewColumn, createNewCard }) => {
+const ListColumns = ({ columns, createNewColumn, createNewCard, deleteColumnDetails }) => {
 	const [openNewColumnForm, setOpenNewColumnForm] = useState(false)
 	const toggleOpenNewColumnForm = () => setOpenNewColumnForm(!openNewColumnForm)
 
@@ -39,10 +39,7 @@ const ListColumns = ({ columns, createNewColumn, createNewCard }) => {
     Nếu không đúng thì vẫn kéo thả được nhưng không có animation
   */
 	return (
-		<SortableContext
-			items={columns?.map((c) => c._id)}
-			strategy={horizontalListSortingStrategy}
-		>
+		<SortableContext items={columns?.map((c) => c._id)} strategy={horizontalListSortingStrategy}>
 			<Box
 				sx={{
 					bgcolor: 'inherit',
@@ -56,7 +53,14 @@ const ListColumns = ({ columns, createNewColumn, createNewCard }) => {
 			>
 				{/* Box Column */}
 				{columns?.map((column) => {
-					return <Column key={column._id} column={column} createNewCard={createNewCard} />
+					return (
+						<Column
+							key={column._id}
+							column={column}
+							createNewCard={createNewCard}
+							deleteColumnDetails={deleteColumnDetails}
+						/>
+					)
 				})}
 
 				{!openNewColumnForm ? (

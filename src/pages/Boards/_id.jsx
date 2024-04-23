@@ -10,7 +10,8 @@ import {
 	createNewCardApi,
 	updateBoardDetailsAPI,
 	updateColumnDetailsAPI,
-	moveCardToDifferentColumnAPI
+	moveCardToDifferentColumnAPI,
+	deleteColumnDetailsAPI
 } from '~/apis'
 import { generatePlaceholderCard } from '~/utils/formatters'
 import { mapOrder } from '~/utils/sorts'
@@ -18,6 +19,7 @@ import { isEmpty } from 'lodash'
 import { useEffect, useState } from 'react'
 import { Box, Typography } from '@mui/material'
 import CircularProgress from '@mui/material/CircularProgress'
+import { toast } from 'react-toastify'
 
 function Board() {
 	const [board, setBoard] = useState(null)
@@ -121,11 +123,6 @@ function Board() {
 	 * => Làm một API support riêng
 	 *  */
 	const moveCardToDifferentColumn = (currentCardId, prevColumnId, nextColumnId, dndOrderedColumns) => {
-		console.log(currentCardId)
-		console.log(prevColumnId)
-		console.log(nextColumnId)
-		console.log(dndOrderedColumns)
-
 		// update lại cho dữ liệu state Board
 		const dndOrderedCardIds = dndOrderedColumns.map((c) => c._id)
 		const newBoard = { ...board }
@@ -140,6 +137,20 @@ function Board() {
 			prevCardOrderIds: dndOrderedColumns.find((c) => c._id === prevColumnId)?.cardOrderIds,
 			nextColumnId,
 			nextCardOrderIds: dndOrderedColumns.find((c) => c._id === nextColumnId)?.cardOrderIds
+		})
+	}
+
+	// xử lý xóa 1 Column và Cards bên trong nó
+	const deleteColumnDetails = (columnId) => {
+		// update cho chuẩn dữ liệu state board
+		const newBoard = { ...board }
+		newBoard.columns = newBoard.columns.filter((c) => c._id !== columnId)
+		newBoard.columnOrderIds = newBoard.columnOrderIds.filter((_id) => _id !== columnId)
+		setBoard(newBoard)
+
+		// gọi API phía BE
+		deleteColumnDetailsAPI(columnId).then((res) => {
+			toast.success(res?.deleteResult)
 		})
 	}
 
@@ -174,6 +185,7 @@ function Board() {
 				moveColumns={moveColumns}
 				moveCardInTheSameColumn={moveCardInTheSameColumn}
 				moveCardToDifferentColumn={moveCardToDifferentColumn}
+				deleteColumnDetails={deleteColumnDetails}
 			/>
 		</Container>
 	)
